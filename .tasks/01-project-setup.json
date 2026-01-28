@@ -1,0 +1,62 @@
+{
+  "task_id": "01",
+  "title": "Project Setup & Tooling Configuration",
+  "description": "Initialize the Python project structure with uv, configure linting/formatting tools, and create the base application skeleton.",
+  "dependencies": [],
+  "estimated_complexity": "low",
+  
+  "deliverables": [
+    "pyproject.toml with all dependencies",
+    ".ruff.toml configuration",
+    "mypy.ini with strict settings",
+    "src/uuid_classifier/__init__.py",
+    "src/uuid_classifier/main.py (minimal FastAPI app)",
+    "src/uuid_classifier/core/__init__.py",
+    "src/uuid_classifier/core/config.py (Pydantic Settings)",
+    "tests/conftest.py",
+    ".env.example"
+  ],
+
+  "specifications": {
+    "python_version": "3.12",
+    "dependencies": {
+      "runtime": [
+        "fastapi>=0.109.0",
+        "uvicorn[standard]>=0.27.0",
+        "sqlalchemy[asyncio]>=2.0.25",
+        "asyncpg>=0.29.0",
+        "pydantic>=2.5.0",
+        "pydantic-settings>=2.1.0",
+        "google-search-results>=2.4.2",
+        "httpx>=0.26.0"
+      ],
+      "dev": [
+        "pytest>=7.4.0",
+        "pytest-asyncio>=0.23.0",
+        "pytest-cov>=4.1.0",
+        "ruff>=0.1.0",
+        "mypy>=1.8.0"
+      ]
+    },
+    "config_settings": {
+      "DATABASE_URL": "postgresql+asyncpg://user:pass@localhost:5432/uuidy",
+      "SERPAPI_KEY": "optional API key",
+      "CACHE_TTL_DAYS": "optional, default 30"
+    }
+  },
+
+  "acceptance_criteria": [
+    "uv sync completes without errors",
+    "uv run ruff check . passes",
+    "uv run mypy . passes with no errors",
+    "uv run fastapi dev starts server on localhost:8000",
+    "GET / returns {\"status\": \"ok\"} health check"
+  ],
+
+  "implementation_notes": [
+    "Use src/ layout for proper package structure",
+    "Config class should use pydantic_settings.BaseSettings",
+    "All config values from environment variables",
+    "Include model_config with env_file = '.env'"
+  ]
+}

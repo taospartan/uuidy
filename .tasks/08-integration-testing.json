@@ -1,0 +1,78 @@
+{
+  "task_id": "08",
+  "title": "Integration Testing & End-to-End Validation",
+  "description": "Comprehensive integration tests validating the full request lifecycle with real database interactions.",
+  "dependencies": ["07"],
+  "estimated_complexity": "medium",
+
+  "deliverables": [
+    "tests/integration/test_full_flow.py",
+    "tests/integration/conftest.py",
+    "tests/fixtures/mock_serpapi_responses.py",
+    "Update tests/conftest.py with shared fixtures"
+  ],
+
+  "specifications": {
+    "test_database_setup": {
+      "strategy": "Use separate test database or testcontainers",
+      "cleanup": "Truncate tables between tests or use transactions"
+    },
+    "mock_strategy": {
+      "serpapi": "Always mock in tests (no real API calls)",
+      "database": "Real PostgreSQL for integration, mock for unit"
+    },
+    "test_scenarios": [
+      {
+        "name": "Full cache miss flow",
+        "steps": [
+          "Request unknown UUID",
+          "Verify search service called",
+          "Verify record saved to DB",
+          "Verify response has cached=false"
+        ]
+      },
+      {
+        "name": "Full cache hit flow",
+        "steps": [
+          "Pre-populate DB with record",
+          "Request known UUID",
+          "Verify search service NOT called",
+          "Verify response has cached=true"
+        ]
+      },
+      {
+        "name": "Search failure graceful degradation",
+        "steps": [
+          "Mock search to raise exception",
+          "Request unknown UUID",
+          "Verify response returns Unknown classification",
+          "Verify no record saved (or partial record)"
+        ]
+      }
+    ]
+  },
+
+  "acceptance_criteria": [
+    "All integration tests pass with real PostgreSQL",
+    "Tests are isolated (no cross-test pollution)",
+    "Coverage report shows >90% coverage",
+    "Tests complete in reasonable time (<30s total)"
+  ],
+
+  "pytest_configuration": {
+    "markers": ["unit", "integration"],
+    "asyncio_mode": "auto",
+    "env_vars": {
+      "DATABASE_URL": "postgresql+asyncpg://test:test@localhost:5432/uuidy_test",
+      "SERPAPI_KEY": "test_key_not_used"
+    }
+  },
+
+  "conftest_fixtures": [
+    "event_loop: Session-scoped event loop",
+    "test_db: Create/drop test database",
+    "async_session: Per-test database session with rollback",
+    "async_client: httpx.AsyncClient bound to test app",
+    "mock_search_service: Auto-used mock for SerpAPI"
+  ]
+}

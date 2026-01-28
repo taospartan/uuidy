@@ -1,0 +1,74 @@
+{
+  "task_id": "05",
+  "title": "Search Service - Google/SerpAPI Integration",
+  "description": "Implement the web search service that queries Google via SerpAPI for UUID information.",
+  "dependencies": ["01", "03"],
+  "estimated_complexity": "medium",
+
+  "deliverables": [
+    "src/uuid_classifier/services/search_service.py",
+    "tests/unit/test_search_service.py",
+    "tests/fixtures/search_responses.json"
+  ],
+
+  "specifications": {
+    "class": "SearchService",
+    "methods": {
+      "search_uuid": {
+        "signature": "async def search_uuid(self, uuid: str) -> list[SearchResult]",
+        "description": "Search Google for UUID, return top results"
+      }
+    },
+    "search_result_model": {
+      "title": "str",
+      "url": "str", 
+      "snippet": "str",
+      "position": "int"
+    },
+    "search_query_template": "\"{uuid}\" bluetooth OR BLE OR service OR GATT OR beacon",
+    "config": {
+      "max_results": 10,
+      "timeout_seconds": 10
+    }
+  },
+
+  "acceptance_criteria": [
+    "Service initializes with SERPAPI_KEY from settings",
+    "search_uuid returns list of SearchResult objects",
+    "Handles missing API key gracefully (raises or returns empty)",
+    "Handles API errors without crashing (returns empty list + logs)",
+    "Handles timeout gracefully",
+    "Results limited to configured max_results"
+  ],
+
+  "implementation_notes": [
+    "Use serpapi package: from serpapi import GoogleSearch",
+    "Run search in thread pool (serpapi is sync): asyncio.to_thread()",
+    "Extract only needed fields from verbose API response",
+    "Filter out ad results if present",
+    "Consider retry logic for transient failures"
+  ],
+
+  "serpapi_response_structure": {
+    "organic_results": [
+      {
+        "position": 1,
+        "title": "Heart Rate Service - Bluetooth SIG",
+        "link": "https://www.bluetooth.com/...",
+        "snippet": "The Heart Rate Service exposes heart rate..."
+      }
+    ]
+  },
+
+  "test_patterns": {
+    "mocking": "Mock serpapi.GoogleSearch to avoid real API calls",
+    "fixtures": "JSON file with sample API responses",
+    "test_cases": [
+      "test_search_returns_results",
+      "test_search_handles_empty_results",
+      "test_search_handles_api_error",
+      "test_search_handles_missing_key",
+      "test_search_respects_max_results"
+    ]
+  }
+}

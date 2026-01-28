@@ -1,0 +1,77 @@
+{
+  "task_id": "06",
+  "title": "Classifier Service - Heuristic Result Compilation",
+  "description": "Implement heuristic-based parsing of search results to compile structured classification records.",
+  "dependencies": ["03", "05"],
+  "estimated_complexity": "high",
+
+  "deliverables": [
+    "src/uuid_classifier/services/classifier_service.py",
+    "src/uuid_classifier/utils/__init__.py",
+    "src/uuid_classifier/utils/ble_patterns.py",
+    "tests/unit/test_classifier_service.py"
+  ],
+
+  "specifications": {
+    "class": "ClassifierService",
+    "methods": {
+      "classify": {
+        "signature": "async def classify(self, uuid: str, search_results: list[SearchResult]) -> ClassificationCreate",
+        "description": "Analyze search results and produce classification"
+      }
+    },
+    "classification_logic": {
+      "type_detection": {
+        "Standard BLE Service": "UUID matches Bluetooth SIG patterns or found in official docs",
+        "Vendor-Specific": "Contains vendor name in results (Apple, Samsung, etc.)",
+        "Apple iBeacon": "iBeacon mentioned in results",
+        "Google Eddystone": "Eddystone mentioned in results",
+        "Unknown": "No clear pattern detected"
+      },
+      "name_extraction": {
+        "strategy": "Find most common service/device name across results",
+        "fallback": "Unknown"
+      },
+      "confidence_scoring": {
+        "high": "3+ results agree on name/type, official source present",
+        "medium": "2 results agree or single authoritative source",
+        "low": "Conflicting or sparse information"
+      }
+    }
+  },
+
+  "ble_patterns": {
+    "bluetooth_sig_base": "0000xxxx-0000-1000-8000-00805f9b34fb",
+    "known_prefixes": {
+      "0x180D": "Heart Rate",
+      "0x180F": "Battery Service",
+      "0x180A": "Device Information",
+      "0x1800": "Generic Access",
+      "0x1801": "Generic Attribute"
+    },
+    "vendor_indicators": [
+      "apple", "samsung", "google", "fitbit", "garmin",
+      "nordic", "texas instruments", "silicon labs"
+    ]
+  },
+
+  "acceptance_criteria": [
+    "Correctly identifies standard BLE service UUIDs",
+    "Extracts name from consistent search results",
+    "Assigns appropriate confidence level",
+    "Handles empty search results (returns Unknown classification)",
+    "Sources field populated from search results"
+  ],
+
+  "test_patterns": {
+    "test_cases": [
+      "test_classify_heart_rate_service",
+      "test_classify_vendor_specific",
+      "test_classify_unknown_uuid",
+      "test_classify_empty_results",
+      "test_confidence_high_with_agreement",
+      "test_confidence_low_with_conflicts"
+    ],
+    "fixtures": "Pre-built search result sets for each scenario"
+  }
+}

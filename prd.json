@@ -1,0 +1,150 @@
+{
+"project_name": "uuidy",
+"version": "0.1.0",
+"date": "2026-01-28",
+"overview": "A FastAPI-based web service that accepts a UUID, checks a PostgreSQL database for a cached classification record, and if none exists, performs a Google web search for information about the UUID (with emphasis on Bluetooth Low Energy service/context identification), compiles the search results into a structured classification record, stores it in the database, and returns it. Subsequent queries for the same UUID return the cached record.",
+"problem_statement": "Unknown UUIDs, especially in Bluetooth Low Energy advertisements and GATT services, require manual web searches to identify their purpose (e.g., standard service, vendor-specific). This API automates discovery, caches results for performance, and provides a programmatic interface for tools and applications handling BLE data.",
+"goals": [
+"Provide a reliable, fast API endpoint for UUID classification with caching",
+"Reduce redundant web searches through persistent storage",
+"Deliver high-quality, maintainable code following clean architecture and TDD principles",
+"Ensure type safety, linting compliance, and modern Python tooling"
+],
+"scope": {
+"in_scope": [
+"Single POST/GET endpoint to submit/retrieve UUID classification",
+"Database caching of classification records",
+"Google web search integration (via a search API)",
+"Basic compilation of search results into a structured classification record",
+"Full test coverage using TDD",
+"Project setup with UV, Ruff, and MyPy"
+],
+"out_of_scope": [
+"Advanced NLP/LL-based classification (initial version uses heuristic extraction)",
+"User authentication or multi-tenancy",
+"Admin UI or manual record editing",
+"Support for non-UUID inputs",
+"Real-time search result parsing beyond top results"
+]
+},
+"features": [
+{
+"id": "F001",
+"title": "Classify UUID Endpoint",
+"description": "POST or GET /classify/{uuid}",
+"details": "Accepts a UUID string (path or body). Validates UUID format. Returns cached record if exists; otherwise triggers search, classification, storage, and returns new record.",
+"acceptance_criteria": [
+"Valid UUID returns JSON classification record",
+"Invalid UUID returns 400 error",
+"Response includes cache status (cached/new)"
+]
+},
+{
+"id": "F002",
+"title": "Database Caching",
+"description": "PostgreSQL table stores UUID and classification record",
+"details": "Primary key: uuid (string). Fields include classification JSON, searched_at timestamp, source_urls array, raw_search_snippets optional.",
+"acceptance_criteria": [
+"Identical UUID returns identical record without new search",
+"New UUID creates new row"
+]
+},
+{
+"id": "F003",
+"title": "Web Search Integration",
+"description": "Trigger Google search for the UUID string",
+"details": "Use a Google-compatible search library/API (e.g., serpapi, google-search-results, or googlesearch-python). Query examples: '"{uuid}" bluetooth OR BLE OR service OR GATT'. Fetch top 5-10 results.",
+"acceptance_criteria": [
+"Search executes only on cache miss",
+"Handles API errors gracefully"
+]
+},
+{
+"id": "F004",
+"title": "Classification Compilation",
+"description": "Transform search results into structured record",
+"details": {
+"output_format": {
+"uuid": "string",
+"name": "string (extracted service/device name or 'Unknown')",
+"type": "string (e.g., 'Standard BLE Service', 'Vendor-Specific', 'Apple iBeacon', 'Unknown')",
+"description": "string (summary from results)",
+"sources": ["array of {title, url, snippet}"],
+"confidence": "enum: high/medium/low based on result consistency",
+"cached": "boolean",
+"searched_at": "ISO timestamp"
+},
+"compilation_logic": "Heuristic parsing: look for known patterns (e.g., Bluetooth SIG assigned names, common vendor prefixes, iBeacon/Eddystone formats). Extract most frequent name/description from top results."
+}
+}
+],
+"non_functional_requirements": [
+"Performance: < 5s response for cached, < 15s for new (including search)",
+"Reliability: Idempotent, safe retry on failures",
+"Security: Validate/sanitize UUID input, rate limiting (optional initial)",
+"Scalability: Async FastAPI, connection pooling for DB",
+"Observability: Basic logging of searches and errors"
+],
+"technical_stack": {
+"language": "Python 3.12",
+"framework": "FastAPI (async)",
+"database": "PostgreSQL",
+"orm": "SQLAlchemy 2.0 (async) or Tortoise-ORM",
+"search": "serpapi (recommended paid) or google-search-results npm-like Python wrapper",
+"validation": "Pydantic v2",
+"testing": "pytest + httpx for API tests",
+"tools": {
+"package_management": "uv (for venv, lockfile, scripts)",
+"linter": "ruff",
+"type_checking": "mypy (strict mode)",
+"formatting": "ruff format"
+}
+},
+"development_approach": "Test-Driven Development (TDD): All features implemented by writing failing tests first (unit for services, integration for API/DB). Aim for >90% coverage. Clean architecture: separate layers (api, core, db, services). Dependency injection via FastAPI Depends.",
+"repository_structure": {
+"root": [
+"pyproject.toml",
+"uv.lock",
+".ruff.toml",
+"mypy.ini",
+"README.md",
+"docker-compose.yml (optional for local Postgres)"
+],
+"src/uuid_classifier/": [
+"init.py",
+"main.py (FastAPI app)",
+"api/router.py",
+"core/config.py (settings via Pydantic Settings)",
+"db/models.py",
+"db/database.py",
+"schemas/classification.py",
+"services/search_service.py",
+"services/classifier_service.py",
+"services/cache_service.py",
+"utils/helpers.py"
+],
+"tests/": [
+"unit/",
+"integration/",
+"conftest.py"
+]
+},
+"deliverables": [
+"Fully functional FastAPI application",
+"PostgreSQL schema (alembic migrations recommended)",
+"Comprehensive test suite",
+"Configured uv, ruff, mypy",
+"README with setup, run, test instructions",
+"Example curl requests"
+],
+"risks_and_mitigations": [
+{
+"risk": "Google search API costs or rate limits",
+"mitigation": "Use paid SerpAPI key (configurable via env), fallback to cached results, optional local mock for tests"
+},
+{
+"risk": "Inaccurate classification from noisy results",
+"mitigation": "Start with simple heuristics, confidence score, allow future extension to LLM parsing"
+}
+]
+}

@@ -1,0 +1,66 @@
+{
+  "task_id": "04",
+  "title": "Cache Service - Database CRUD Operations",
+  "description": "Implement the caching layer that reads/writes UUID classification records to PostgreSQL.",
+  "dependencies": ["02", "03"],
+  "estimated_complexity": "medium",
+
+  "deliverables": [
+    "src/uuid_classifier/services/__init__.py",
+    "src/uuid_classifier/services/cache_service.py",
+    "tests/unit/test_cache_service.py"
+  ],
+
+  "specifications": {
+    "class": "CacheService",
+    "methods": {
+      "get_classification": {
+        "signature": "async def get_classification(self, uuid: str) -> ClassificationRecord | None",
+        "description": "Fetch cached record by UUID, return None if not found"
+      },
+      "save_classification": {
+        "signature": "async def save_classification(self, data: ClassificationCreate) -> ClassificationRecord",
+        "description": "Insert new classification record, return created record"
+      },
+      "exists": {
+        "signature": "async def exists(self, uuid: str) -> bool",
+        "description": "Quick check if UUID exists in cache"
+      }
+    },
+    "dependency_injection": {
+      "pattern": "Service receives AsyncSession via __init__",
+      "fastapi_depends": "Create get_cache_service dependency"
+    }
+  },
+
+  "acceptance_criteria": [
+    "get_classification returns None for unknown UUID",
+    "get_classification returns record for known UUID",
+    "save_classification creates new record and returns it",
+    "save_classification handles duplicate UUID gracefully (upsert or error)",
+    "All methods use async/await properly",
+    "Service can be injected via FastAPI Depends()"
+  ],
+
+  "implementation_notes": [
+    "Use SQLAlchemy select() for queries",
+    "Normalize UUID to lowercase before queries",
+    "Consider adding TTL check (optional for MVP)",
+    "Wrap DB operations in try/except for error handling",
+    "Log cache hits/misses for observability"
+  ],
+
+  "test_patterns": {
+    "fixtures": [
+      "async_session: AsyncSession fixture with test database",
+      "sample_classification: Pre-populated test record"
+    ],
+    "test_cases": [
+      "test_get_nonexistent_returns_none",
+      "test_save_and_retrieve",
+      "test_exists_true_when_present",
+      "test_exists_false_when_absent",
+      "test_uuid_normalization"
+    ]
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "task_id": "07",
+  "title": "API Layer - FastAPI Routes",
+  "description": "Implement the main classification endpoint that orchestrates cache lookup, search, and classification.",
+  "dependencies": ["04", "05", "06"],
+  "estimated_complexity": "medium",
+
+  "deliverables": [
+    "src/uuid_classifier/api/__init__.py",
+    "src/uuid_classifier/api/router.py",
+    "src/uuid_classifier/api/dependencies.py",
+    "Update src/uuid_classifier/main.py to include router",
+    "tests/integration/test_api.py"
+  ],
+
+  "specifications": {
+    "endpoints": {
+      "GET /classify/{uuid}": {
+        "description": "Classify a UUID (path parameter)",
+        "response": "ClassificationResponse",
+        "errors": {
+          "400": "Invalid UUID format",
+          "500": "Internal server error"
+        }
+      },
+      "POST /classify": {
+        "description": "Classify a UUID (request body)",
+        "request_body": {"uuid": "string"},
+        "response": "ClassificationResponse",
+        "errors": {
+          "400": "Invalid UUID format",
+          "422": "Validation error",
+          "500": "Internal server error"
+        }
+      },
+      "GET /health": {
+        "description": "Health check endpoint",
+        "response": {"status": "ok", "version": "0.1.0"}
+      }
+    },
+    "orchestration_flow": [
+      "1. Validate UUID format (return 400 if invalid)",
+      "2. Normalize UUID (lowercase, with hyphens)",
+      "3. Check cache via CacheService",
+      "4. If cached: return with cached=true",
+      "5. If not cached: call SearchService",
+      "6. Pass results to ClassifierService",
+      "7. Save to cache via CacheService",
+      "8. Return with cached=false"
+    ]
+  },
+
+  "acceptance_criteria": [
+    "GET /classify/{uuid} returns classification for valid UUID",
+    "POST /classify returns classification for valid UUID",
+    "Invalid UUID returns 400 with descriptive error",
+    "Cached UUID returns cached=true, no new search",
+    "New UUID triggers search and returns cached=false",
+    "Health endpoint returns status ok"
+  ],
+
+  "implementation_notes": [
+    "Use APIRouter for modular routing",
+    "Inject services via Depends()",
+    "Add logging at each orchestration step",
+    "Include request timing for observability",
+    "Handle service exceptions gracefully"
+  ],
+
+  "test_patterns": {
+    "fixtures": [
+      "async_client: httpx.AsyncClient with test app",
+      "mock_services: Mocked cache, search, classifier services"
+    ],
+    "test_cases": [
+      "test_classify_valid_uuid_cache_hit",
+      "test_classify_valid_uuid_cache_miss",
+      "test_classify_invalid_uuid_returns_400",
+      "test_classify_post_endpoint",
+      "test_health_endpoint",
+      "test_search_failure_returns_partial_result"
+    ]
+  },
+
+  "example_requests": {
+    "get": "GET /classify/0000180d-0000-1000-8000-00805f9b34fb",
+    "post": "POST /classify {\"uuid\": \"0000180d-0000-1000-8000-00805f9b34fb\"}"
+  }
+}

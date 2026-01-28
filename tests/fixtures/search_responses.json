@@ -1,0 +1,128 @@
+{
+  "heart_rate_service_response": {
+    "search_metadata": {
+      "id": "abc123",
+      "status": "Success",
+      "json_endpoint": "https://serpapi.com/searches/abc123.json"
+    },
+    "search_parameters": {
+      "engine": "google",
+      "q": "\"0000180d-0000-1000-8000-00805f9b34fb\" bluetooth OR BLE OR service OR GATT OR beacon"
+    },
+    "organic_results": [
+      {
+        "position": 1,
+        "title": "Heart Rate Service - Bluetooth SIG",
+        "link": "https://www.bluetooth.com/specifications/gatt/services/",
+        "displayed_link": "www.bluetooth.com › specifications › gatt",
+        "snippet": "The Heart Rate Service exposes heart rate and other data from a Heart Rate Sensor intended for fitness applications. UUID: 0x180D"
+      },
+      {
+        "position": 2,
+        "title": "GATT Specifications | Bluetooth® Technology Website",
+        "link": "https://www.bluetooth.com/specifications/gatt/",
+        "displayed_link": "www.bluetooth.com › specifications › gatt",
+        "snippet": "GATT Services and Characteristics. Heart Rate Service (0x180D) - Exposes heart rate data."
+      },
+      {
+        "position": 3,
+        "title": "Bluetooth Low Energy Heart Rate Service - Nordic Semiconductor",
+        "link": "https://infocenter.nordicsemi.com/topic/sdk_nrf5_v17.1.0/ble_sdk_app_hrs.html",
+        "displayed_link": "infocenter.nordicsemi.com › topic",
+        "snippet": "The Heart Rate Service (HRS) with UUID 0x180D is a standardized BLE service for heart rate monitors."
+      },
+      {
+        "position": 4,
+        "title": "Understanding BLE GATT Services and Characteristics",
+        "link": "https://developer.apple.com/documentation/corebluetooth",
+        "displayed_link": "developer.apple.com › documentation",
+        "snippet": "Bluetooth GATT defines standardized services like Heart Rate (180D), Battery Service (180F), and more."
+      },
+      {
+        "position": 5,
+        "title": "Heart Rate Monitor BLE Implementation Guide",
+        "link": "https://github.com/example/ble-heart-rate",
+        "displayed_link": "github.com › example",
+        "snippet": "Implementation of BLE Heart Rate Service (UUID: 0000180d-0000-1000-8000-00805f9b34fb) for embedded devices."
+      }
+    ]
+  },
+  "empty_results_response": {
+    "search_metadata": {
+      "id": "def456",
+      "status": "Success"
+    },
+    "search_parameters": {
+      "engine": "google",
+      "q": "\"12345678-1234-1234-1234-123456789abc\" bluetooth OR BLE OR service OR GATT OR beacon"
+    },
+    "organic_results": []
+  },
+  "vendor_specific_response": {
+    "search_metadata": {
+      "id": "ghi789",
+      "status": "Success"
+    },
+    "search_parameters": {
+      "engine": "google",
+      "q": "\"6e400001-b5a3-f393-e0a9-e50e24dcca9e\" bluetooth OR BLE OR service OR GATT OR beacon"
+    },
+    "organic_results": [
+      {
+        "position": 1,
+        "title": "Nordic UART Service (NUS) - Nordic Semiconductor",
+        "link": "https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/libraries/bluetooth_services/nus.html",
+        "displayed_link": "developer.nordicsemi.com › nRF_Connect_SDK",
+        "snippet": "The Nordic UART Service (NUS) with UUID 6e400001-b5a3-f393-e0a9-e50e24dcca9e provides a serial port emulation over BLE."
+      },
+      {
+        "position": 2,
+        "title": "BLE UART Service Tutorial",
+        "link": "https://learn.adafruit.com/introduction-to-bluetooth-low-energy/uart-service",
+        "displayed_link": "learn.adafruit.com › introduction",
+        "snippet": "The Nordic UART Service is commonly used for serial communication over Bluetooth Low Energy."
+      }
+    ]
+  },
+  "response_with_ads": {
+    "search_metadata": {
+      "id": "jkl012",
+      "status": "Success"
+    },
+    "ads": [
+      {
+        "position": 1,
+        "title": "Buy Bluetooth Devices - Shop Now",
+        "link": "https://www.example-shop.com/bluetooth"
+      }
+    ],
+    "organic_results": [
+      {
+        "position": 1,
+        "title": "Real Result - Bluetooth Service",
+        "link": "https://www.bluetooth.com/real-result",
+        "snippet": "This is a real organic result about Bluetooth services."
+      }
+    ]
+  },
+  "many_results_response": {
+    "search_metadata": {
+      "id": "mno345",
+      "status": "Success"
+    },
+    "organic_results": [
+      {"position": 1, "title": "Result 1", "link": "https://example.com/1", "snippet": "Snippet 1"},
+      {"position": 2, "title": "Result 2", "link": "https://example.com/2", "snippet": "Snippet 2"},
+      {"position": 3, "title": "Result 3", "link": "https://example.com/3", "snippet": "Snippet 3"},
+      {"position": 4, "title": "Result 4", "link": "https://example.com/4", "snippet": "Snippet 4"},
+      {"position": 5, "title": "Result 5", "link": "https://example.com/5", "snippet": "Snippet 5"},
+      {"position": 6, "title": "Result 6", "link": "https://example.com/6", "snippet": "Snippet 6"},
+      {"position": 7, "title": "Result 7", "link": "https://example.com/7", "snippet": "Snippet 7"},
+      {"position": 8, "title": "Result 8", "link": "https://example.com/8", "snippet": "Snippet 8"},
+      {"position": 9, "title": "Result 9", "link": "https://example.com/9", "snippet": "Snippet 9"},
+      {"position": 10, "title": "Result 10", "link": "https://example.com/10", "snippet": "Snippet 10"},
+      {"position": 11, "title": "Result 11", "link": "https://example.com/11", "snippet": "Snippet 11"},
+      {"position": 12, "title": "Result 12", "link": "https://example.com/12", "snippet": "Snippet 12"}
+    ]
+  }
+}

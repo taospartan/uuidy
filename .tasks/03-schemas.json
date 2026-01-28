@@ -1,0 +1,81 @@
+{
+  "task_id": "03",
+  "title": "Pydantic Schemas - Request/Response Models",
+  "description": "Define Pydantic v2 schemas for API request validation and response serialization.",
+  "dependencies": ["01"],
+  "estimated_complexity": "low",
+
+  "deliverables": [
+    "src/uuid_classifier/schemas/__init__.py",
+    "src/uuid_classifier/schemas/classification.py",
+    "tests/unit/test_schemas.py"
+  ],
+
+  "specifications": {
+    "schemas": {
+      "SourceInfo": {
+        "title": "str",
+        "url": "HttpUrl",
+        "snippet": "str"
+      },
+      "ConfidenceLevel": {
+        "type": "StrEnum",
+        "values": ["high", "medium", "low"]
+      },
+      "ClassificationType": {
+        "type": "StrEnum", 
+        "values": [
+          "Standard BLE Service",
+          "Vendor-Specific",
+          "Apple iBeacon",
+          "Google Eddystone",
+          "Custom Service",
+          "Unknown"
+        ]
+      },
+      "ClassificationResponse": {
+        "uuid": "str (validated UUID format)",
+        "name": "str",
+        "type": "ClassificationType",
+        "description": "str",
+        "sources": "list[SourceInfo]",
+        "confidence": "ConfidenceLevel",
+        "cached": "bool",
+        "searched_at": "datetime"
+      },
+      "ClassificationCreate": {
+        "description": "Internal schema for creating records",
+        "fields": "same as response minus cached"
+      }
+    }
+  },
+
+  "acceptance_criteria": [
+    "Valid UUID strings pass validation",
+    "Invalid UUIDs raise ValidationError",
+    "Response schema serializes datetime to ISO format",
+    "Sources field accepts list of SourceInfo objects",
+    "All schemas have example values in model_config"
+  ],
+
+  "implementation_notes": [
+    "Use Pydantic v2 syntax: model_config = ConfigDict(...)",
+    "UUID validation via custom validator or UUID type",
+    "Accept both hyphenated and non-hyphenated UUIDs",
+    "Normalize UUIDs to lowercase with hyphens",
+    "Include Field() with descriptions for OpenAPI docs"
+  ],
+
+  "uuid_validation_examples": {
+    "valid": [
+      "550e8400-e29b-41d4-a716-446655440000",
+      "550E8400E29B41D4A716446655440000",
+      "0000180d-0000-1000-8000-00805f9b34fb"
+    ],
+    "invalid": [
+      "not-a-uuid",
+      "550e8400-e29b-41d4-a716",
+      "550e8400-e29b-41d4-a716-44665544000g"
+    ]
+  }
+}

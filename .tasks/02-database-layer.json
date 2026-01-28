@@ -1,0 +1,66 @@
+{
+  "task_id": "02",
+  "title": "Database Layer - Models & Connection",
+  "description": "Create SQLAlchemy 2.0 async models for UUID classification records and database session management.",
+  "dependencies": ["01"],
+  "estimated_complexity": "medium",
+
+  "deliverables": [
+    "src/uuid_classifier/db/__init__.py",
+    "src/uuid_classifier/db/models.py",
+    "src/uuid_classifier/db/database.py",
+    "tests/unit/test_models.py",
+    "docker-compose.yml (local PostgreSQL)"
+  ],
+
+  "specifications": {
+    "table_name": "uuid_classifications",
+    "model_fields": {
+      "uuid": "String(36), primary_key, indexed",
+      "name": "String(255), nullable=False, default='Unknown'",
+      "type": "String(100), nullable=False, default='Unknown'",
+      "description": "Text, nullable=True",
+      "sources": "JSON, array of {title, url, snippet}",
+      "confidence": "String(10), enum: high/medium/low",
+      "searched_at": "DateTime(timezone=True), server_default=now()",
+      "created_at": "DateTime(timezone=True), server_default=now()",
+      "updated_at": "DateTime(timezone=True), onupdate=now()"
+    },
+    "database_setup": {
+      "engine": "create_async_engine with pool settings",
+      "session_factory": "async_sessionmaker",
+      "dependency": "get_db_session yields AsyncSession"
+    }
+  },
+
+  "acceptance_criteria": [
+    "Model can be instantiated with valid data",
+    "Model validates UUID format at application level",
+    "docker-compose up -d starts PostgreSQL container",
+    "Database tables can be created via metadata.create_all()",
+    "Session dependency works in FastAPI route"
+  ],
+
+  "implementation_notes": [
+    "Use SQLAlchemy 2.0 declarative style with mapped_column()",
+    "Include __repr__ for debugging",
+    "JSON field for sources uses SQLAlchemy JSON type",
+    "Add index on searched_at for potential TTL queries",
+    "Connection string from settings.DATABASE_URL"
+  ],
+
+  "docker_compose_spec": {
+    "services": {
+      "postgres": {
+        "image": "postgres:16-alpine",
+        "ports": ["5432:5432"],
+        "environment": {
+          "POSTGRES_USER": "uuidy",
+          "POSTGRES_PASSWORD": "uuidy",
+          "POSTGRES_DB": "uuidy"
+        },
+        "volumes": ["postgres_data:/var/lib/postgresql/data"]
+      }
+    }
+  }
+}

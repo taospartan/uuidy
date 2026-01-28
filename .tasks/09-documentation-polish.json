@@ -1,0 +1,71 @@
+{
+  "task_id": "09",
+  "title": "Documentation, Examples & Final Polish",
+  "description": "Complete README documentation, add usage examples, and ensure production readiness.",
+  "dependencies": ["08"],
+  "estimated_complexity": "low",
+
+  "deliverables": [
+    "README.md (comprehensive)",
+    ".env.example (complete)",
+    "Update OpenAPI documentation (FastAPI auto-generated)",
+    "Dockerfile (optional but recommended)",
+    "Example curl commands in docs"
+  ],
+
+  "readme_sections": {
+    "overview": "Project description and use case",
+    "quick_start": [
+      "Prerequisites (Python 3.12, PostgreSQL, uv)",
+      "Clone and setup",
+      "Environment configuration",
+      "Run database",
+      "Start server",
+      "Make first request"
+    ],
+    "api_reference": {
+      "endpoints": "Table of all endpoints",
+      "examples": "curl/httpie examples",
+      "response_format": "JSON schema description"
+    },
+    "development": {
+      "setup": "uv sync, docker-compose up",
+      "testing": "pytest commands",
+      "linting": "ruff and mypy commands"
+    },
+    "architecture": "Brief layer description with diagram",
+    "configuration": "All environment variables documented"
+  },
+
+  "acceptance_criteria": [
+    "README provides complete setup instructions",
+    "New developer can run project following README alone",
+    "All environment variables documented with defaults",
+    "Example requests work as documented",
+    "OpenAPI /docs page renders correctly"
+  ],
+
+  "example_requests": {
+    "classify_known_ble": {
+      "description": "Classify standard BLE Heart Rate Service",
+      "command": "curl http://localhost:8000/classify/0000180d-0000-1000-8000-00805f9b34fb",
+      "expected_response": {
+        "uuid": "0000180d-0000-1000-8000-00805f9b34fb",
+        "name": "Heart Rate",
+        "type": "Standard BLE Service",
+        "confidence": "high"
+      }
+    },
+    "classify_unknown": {
+      "description": "Classify unknown vendor UUID",
+      "command": "curl http://localhost:8000/classify/12345678-1234-1234-1234-123456789abc"
+    }
+  },
+
+  "dockerfile_spec": {
+    "base": "python:3.12-slim",
+    "install": "uv for package management",
+    "expose": 8000,
+    "cmd": "uvicorn uuid_classifier.main:app --host 0.0.0.0"
+  }
+}
